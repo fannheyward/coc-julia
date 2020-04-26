@@ -33,7 +33,7 @@ export class Ctx {
     this.config = new Config();
   }
 
-  resolveBin(): string | null {
+  resolveJuliaBin(): string | null {
     let bin = this.config.executablePath;
     if (bin.startsWith('~')) {
       bin = os.homedir() + bin.slice(1);
@@ -46,12 +46,30 @@ export class Ctx {
     return which.sync(cmd, { nothrow: true });
   }
 
+  async resolveMissingPkgs(): Promise<string[]> {
+    const bin = this.resolveJuliaBin();
+    const installed = execSync(`${bin!} -e "using Pkg; Pkg.status()"`)
+      .toString()
+      .split('\n');
+
+    const missing: string[] = [];
+    const pkgs = ['LanguageServer', 'StaticLint', 'SymbolServer'];
+    for (const p of pkgs) {
+      if (installed.some((s) => s.includes(p))) {
+        continue;
+      }
+      missing.push(p);
+    }
+
+    return missing;
+  }
+
   async resolveEnvPath() {
     if (this.config.environmentPath) {
       return this.config.environmentPath;
     }
 
-    const bin = this.resolveBin();
+    const bin = this.resolveJuliaBin();
     return execSync(`${bin!} --startup-file=no --history-file=no -e "using Pkg; println(dirname(Pkg.Types.Context().env.project_file))"`)
       .toString()
       .trim();
@@ -59,7 +77,7 @@ export class Ctx {
 
   async startServer() {
     const env = await this.resolveEnvPath();
-    const bin = this.resolveBin();
+    const bin = this.resolveJuliaBin();
     const args = [
       '--startup-file=no',
       '--history-file=no',
