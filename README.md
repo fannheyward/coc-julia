@@ -6,14 +6,6 @@ Julia extension for coc.nvim
 
 `:CocInstall coc-julia`
 
-## Keymaps
-
-`nmap <silent> <C-l> <Plug>(coc-coc-julia-keymap)`
-
-## Lists
-
-`:CocList demo_list`
-
 ## License
 
 MIT
