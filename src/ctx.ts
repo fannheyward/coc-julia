@@ -58,14 +58,14 @@ export class Ctx {
   }
 
   async startServer() {
-    // const env = await this.resolveEnvPath();
+    const env = await this.resolveEnvPath();
     const bin = this.resolveBin();
     const args = [
       '--startup-file=no',
       '--history-file=no',
       '--depwarn=no',
       '--eval',
-      `using LanguageServer; import StaticLint; import SymbolServer; server = LanguageServer.LanguageServerInstance(stdin, stdout, false); server.runlinter = true; run(server);`,
+      `using LanguageServer; import StaticLint; import SymbolServer; server = LanguageServer.LanguageServerInstance(stdin, stdout, false, "${env}"); server.runlinter = true; run(server);`,
     ];
 
     const outputChannel = workspace.createOutputChannel('Julia Language Server Trace');
