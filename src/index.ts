@@ -6,6 +6,19 @@ export async function activate(context: ExtensionContext): Promise<void> {
   const ctx = new Ctx(context);
   if (!ctx.config.enabled) return;
 
+  const bin = ctx.resolveBin();
+  if (!bin) {
+    workspace.showMessage(`Can't find julia`, 'warning');
+    return;
+  }
+
+  try {
+    await ctx.startServer();
+  } catch (e) {
+    console.error('Julia LS start error:', e.message);
+    return;
+  }
+
   context.subscriptions.push(
     commands.registerCommand('coc-julia.Command', async () => {
       workspace.showMessage(`coc-julia Commands works!`);
