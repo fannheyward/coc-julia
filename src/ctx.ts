@@ -68,36 +68,12 @@ export class Ctx {
       `using LanguageServer; import StaticLint; import SymbolServer; server = LanguageServer.LanguageServerInstance(stdin, stdout, false); server.runlinter = true; run(server);`,
     ];
 
-    const sections = [
-      'julia.format.indent',
-      'julia.format.indents',
-      'julia.format.ops',
-      'julia.format.tuples',
-      'julia.format.curly',
-      'julia.format.calls',
-      'julia.format.iterOps',
-      'julia.format.comments',
-      'julia.format.docs',
-      'julia.format.lineends',
-      'julia.format.kw',
-      'julia.lint.run',
-      'julia.lint.call',
-      'julia.lint.iter',
-      'julia.lint.nothingcomp',
-      'julia.lint.constif',
-      'julia.lint.lazy',
-      'julia.lint.datadecl',
-      'julia.lint.typeparam',
-      'julia.lint.modname',
-      'julia.lint.pirates',
-      'julia.lint.missingrefs',
-    ];
     const outputChannel = workspace.createOutputChannel('Julia Language Server Trace');
     const serverOptions: ServerOptions = { command: bin!, args };
     const clientOptions: LanguageClientOptions = {
       documentSelector: ['julia', 'juliamarkdown'],
       initializationOptions: workspace.getConfiguration('julia'),
-      synchronize: { configurationSection: sections, fileEvents: workspace.createFileSystemWatcher('**/*.{jl,jmd}') },
+      synchronize: { configurationSection: ['julia.lint', 'julia.format'], fileEvents: workspace.createFileSystemWatcher('**/*.{jl,jmd}') },
       progressOnInitialization: true,
       outputChannel,
     };
