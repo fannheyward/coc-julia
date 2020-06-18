@@ -33,6 +33,14 @@ export class Ctx {
     this.config = new Config();
   }
 
+  resolveLSenv(): string {
+    const LSenv = os.homedir() + "/.config/coc/julia-environment/";
+    if (!fs.existsSync(LSenv)){
+      fs.mkdirSync(LSenv);
+    }
+    return LSenv;
+  }
+
   resolveJuliaBin(): string | null {
     let bin = this.config.executablePath;
     if (bin.startsWith('~')) {
@@ -46,22 +54,20 @@ export class Ctx {
     return which.sync(cmd, { nothrow: true });
   }
 
-  async resolveMissingPkgs(): Promise<string[]> {
+  fixMissingPkgs(): void {
     const bin = this.resolveJuliaBin();
-    const installed = execSync(`${bin!} -e "using Pkg; Pkg.status()"`)
+    const LSenv = this.resolveLSenv();
+    const installed = execSync(`${bin!} --project="${LSenv}" --startup-file=no --history-file=no -e "using Pkg; Pkg.status()"`)
       .toString()
       .split('\n');
 
-    const missing: string[] = [];
     const pkgs = ['LanguageServer', 'StaticLint', 'SymbolServer'];
     for (const p of pkgs) {
       if (installed.some((s) => s.includes(p))) {
         continue;
       }
-      missing.push(p);
+      execSync(`${bin!} --project="${LSenv}" --startup-file=no --history-file=no -e "using Pkg; Pkg.add(\\"${p}\\");"`);
     }
-
-    return missing;
   }
 
   async resolveEnvPath() {
@@ -78,7 +84,9 @@ export class Ctx {
   async startServer() {
     const env = await this.resolveEnvPath();
     const bin = this.resolveJuliaBin();
+    const LSenv = this.resolveLSenv();
     const args = [
+      '--project=' + LSenv + '',
       '--startup-file=no',
       '--history-file=no',
       '--depwarn=no',
