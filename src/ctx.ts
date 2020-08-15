@@ -83,7 +83,7 @@ export class Ctx {
       '--history-file=no',
       '--depwarn=no',
       '--eval',
-      `using LanguageServer; import StaticLint; import SymbolServer; server = LanguageServer.LanguageServerInstance(stdin, stdout, "${env}"); server.runlinter = true; run(server);`,
+      `using LanguageServer; import StaticLint; import SymbolServer; server = LanguageServer.LanguageServerInstance(stdin, stdout, ${env}, ""); server.runlinter = true; run(server);`,
     ];
 
     const outputChannel = workspace.createOutputChannel('Julia Language Server Trace');
