@@ -4,7 +4,7 @@ import fs from 'fs';
 import os from 'os';
 import path from 'path';
 import { promisify } from 'util';
-import { NotificationType } from 'vscode-languageserver-protocol';
+import { CompletionItem, CompletionList, InsertTextFormat, NotificationType } from 'vscode-languageserver-protocol';
 import which from 'which';
 
 const execPromise = promisify(exec);
@@ -133,6 +133,26 @@ export class Ctx {
       synchronize: { configurationSection: ['julia.lint', 'julia.format'], fileEvents: workspace.createFileSystemWatcher('**/*.{jl,jmd}') },
       progressOnInitialization: true,
       outputChannel,
+      middleware: {
+        provideCompletionItem: async (document, position, context, token, next) => {
+          const res = (await next(document, position, context, token)) as CompletionList;
+          const items: CompletionItem[] = [];
+          if (res && Array.isArray(res.items)) {
+            for (const item of res.items) {
+              const newText = item.textEdit?.newText;
+              if (item.insertTextFormat === InsertTextFormat.Snippet) {
+                if (newText && !newText.includes('$')) {
+                  item.insertTextFormat = InsertTextFormat.PlainText;
+                }
+              }
+
+              items.push(item);
+            }
+          }
+
+          return { items, isIncomplete: res.isIncomplete };
+        },
+      },
     };
 
     const client = new LanguageClient('julia', 'Julia Language Server', serverOptions, clientOptions);
