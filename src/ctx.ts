@@ -1,10 +1,19 @@
 import { exec } from 'child_process';
-import { ExtensionContext, LanguageClient, LanguageClientOptions, ServerOptions, services, workspace, WorkspaceConfiguration } from 'coc.nvim';
+import {
+  CompletionContext,
+  ExtensionContext,
+  LanguageClient,
+  LanguageClientOptions,
+  ServerOptions,
+  services,
+  workspace,
+  WorkspaceConfiguration,
+} from 'coc.nvim';
 import fs from 'fs';
 import os from 'os';
 import path from 'path';
 import { promisify } from 'util';
-import { CompletionItem, CompletionList, InsertTextFormat, NotificationType } from 'vscode-languageserver-protocol';
+import { CompletionItem, CompletionList, NotificationType, Range } from 'vscode-languageserver-protocol';
 import which from 'which';
 
 const execPromise = promisify(exec);
@@ -134,16 +143,18 @@ export class Ctx {
       progressOnInitialization: true,
       outputChannel,
       middleware: {
-        provideCompletionItem: async (document, position, context, token, next) => {
+        provideCompletionItem: async (document, position, context: CompletionContext, token, next) => {
+          const option = context.option!;
+          const input = option.input.startsWith(option.word) ? option.input : option.word + option.input;
           const res = (await next(document, position, context, token)) as CompletionList;
           const items: CompletionItem[] = [];
           if (res && Array.isArray(res.items)) {
             for (const item of res.items) {
               const newText = item.textEdit?.newText;
-              if (item.insertTextFormat === InsertTextFormat.Snippet) {
-                if (newText && !newText.includes('$')) {
-                  item.insertTextFormat = InsertTextFormat.PlainText;
-                }
+              if (newText && !newText.startsWith(input)) {
+                const range = Object.assign({}, item.textEdit?.range);
+                item.textEdit!.newText = `${input}${newText}`;
+                item.textEdit!.range = Range.create(range.start.line, range.start.character - input.length, range.end.line, range.end.character);
               }
 
               items.push(item);
