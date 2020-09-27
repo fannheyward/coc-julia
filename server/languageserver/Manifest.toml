@@ -47,7 +47,7 @@ version = "1.2.0"
 
 [[LanguageServer]]
 deps = ["CSTParser", "DocumentFormat", "JSON", "JSONRPC", "Markdown", "REPL", "StaticLint", "SymbolServer", "Tokenize", "URIParser", "UUIDs"]
-git-tree-sha1 = "6070007aadeb3065e063e0a6f0ee65b8a75f4b86"
+git-tree-sha1 = "f3e437253e45311e65d2028eb250e6202c81e5c4"
 repo-rev = "master"
 repo-url = "https://github.com/julia-vscode/LanguageServer.jl"
 uuid = "2b0e0bc5-e4fd-59b4-8912-456d1b03d8d7"
