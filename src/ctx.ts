@@ -135,7 +135,7 @@ export class Ctx {
     ];
 
     const outputChannel = workspace.createOutputChannel('Julia Language Server Trace');
-    const serverOptions: ServerOptions = { command: bin, args };
+    const serverOptions: ServerOptions = { command: bin, args, options: { env: { TMPDIR: '/tmp' } } };
     const clientOptions: LanguageClientOptions = {
       documentSelector: ['julia', 'juliamarkdown'],
       initializationOptions: workspace.getConfiguration('julia'),
