@@ -134,8 +134,9 @@ export class Ctx {
       this.serverRoot,
     ];
 
+    const tmpdir = (await workspace.nvim.eval('$TMPDIR')) as string;
     const outputChannel = workspace.createOutputChannel('Julia Language Server Trace');
-    const serverOptions: ServerOptions = { command: bin, args, options: { env: { ...process.env, TMPDIR: '/tmp' } } };
+    const serverOptions: ServerOptions = { command: bin, args, options: { env: { ...process.env, TMPDIR: tmpdir } } };
     const clientOptions: LanguageClientOptions = {
       documentSelector: ['julia', 'juliamarkdown'],
       initializationOptions: workspace.getConfiguration('julia'),
