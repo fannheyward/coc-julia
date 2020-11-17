@@ -1,0 +1,15 @@
+name = "JuliaLS"
+uuid = "0ec4ad5a-e7f9-49de-9a17-36cc3df90ba0"
+authors = ["Heyward Fann <fannheyward@gmail.com>"]
+version = "0.1.0"
+
+[deps]
+CSTParser = "00ebfdb7-1f24-5e51-bd34-a7502290713f"
+JSON = "682c06a0-de6a-54ab-a142-c8b1cf79cde6"
+JSONRPC = "b9b8584e-8fd3-41f9-ad0c-7255d428e418"
+LanguageServer = "2b0e0bc5-e4fd-59b4-8912-456d1b03d8d7"
+PackageCompiler = "9b87118b-4619-50d2-8e1e-99f35a4d4d9d"
+Sockets = "6462fe0b-24de-5631-8697-dd941f90decc"
+StaticLint = "b3cc710f-9c33-5bdb-a03d-a94903873e97"
+SymbolServer = "cf896787-08d5-524d-9de7-132aaa0cb996"
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"

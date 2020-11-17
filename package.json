@@ -168,6 +168,11 @@
         }
       }
     },
-    "commands": []
+    "commands": [
+      {
+        "command": "julia.CompileLanguageServer",
+        "title": "Use PackageCompiler.jl to compile LanguageServer.jl"
+      }
+    ]
   }
 }

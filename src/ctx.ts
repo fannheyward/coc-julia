@@ -54,9 +54,12 @@ export class Ctx {
   private serverRoot: string;
   constructor(private readonly context: ExtensionContext) {
     this.config = new Config();
-    this.lsProj = path.join(context.extensionPath, 'server', 'languageserver');
+    this.lsProj = path.join(context.extensionPath, 'server', 'JuliaLS');
     this.mainJulia = path.join(context.extensionPath, 'server', 'main.jl');
-    this.serverRoot = context.storagePath;
+    if (!fs.existsSync(context.storagePath)) {
+      fs.mkdirSync(context.storagePath);
+    }
+    this.serverRoot = path.join(context.storagePath, 'JuliaLS')
     if (!fs.existsSync(this.serverRoot)) {
       fs.mkdirSync(this.serverRoot);
     }
@@ -117,12 +120,19 @@ export class Ctx {
     return (await execPromise(cmd)).stdout.trim();
   }
 
-  async startServer() {
+  async compileServer() {
+    workspace.showMessage(`PackageCompiler.jl will take about 10 mins to compile...`)
+    await workspace.createTerminal({name: 'coc-julia-ls'}).then((t) => {
+      const cmd = `cd ${path.join(this.context.extensionPath, 'server')} && sh ./compile.sh ${this.serverRoot}`
+      t.sendText(cmd);
+    })
+  }
+
+  private async prepareLS(): Promise<string[]> {
     await this.resolveMissingPkgs();
     const env = await this.resolveEnvPath();
-    const bin = this.resolveJuliaBin()!;
     const depopPath = process.env.JULIA_DEPOT_PATH ? process.env.JULIA_DEPOT_PATH : '';
-    const args = [
+    return [
       '--startup-file=no',
       '--history-file=no',
       '--depwarn=no',
@@ -131,8 +141,17 @@ export class Ctx {
       env,
       '--debug=no',
       depopPath,
-      this.serverRoot,
+      this.context.storagePath,
     ];
+  }
+
+  async startServer() {
+    let bin = path.join(this.serverRoot, 'bin', process.platform === 'win32' ? 'JuliaLS.exe' : 'JuliaLS');
+    let args: string[] = []
+    if (!fs.existsSync(bin)) {
+      bin = this.resolveJuliaBin()!;
+      args = await this.prepareLS();
+    }
 
     const tmpdir = (await workspace.nvim.eval('$TMPDIR')) as string;
     const outputChannel = workspace.createOutputChannel('Julia Language Server Trace');

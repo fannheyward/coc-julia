@@ -6,6 +6,10 @@ Julia extension for coc.nvim
 
 `:CocInstall coc-julia`
 
+## Commands
+
+- `julia.CompileLanguageServer`: use PackageCompiler.jl to compile LanguageServer.jl
+
 ## License
 
 MIT
