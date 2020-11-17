@@ -1,4 +1,4 @@
-using JuliaLSP
+using JuliaLS
 
 push!(ARGS, "arg")
-JuliaLSP.julia_main()
+JuliaLS.julia_main()
