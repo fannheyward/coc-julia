@@ -147,7 +147,7 @@ export class Ctx {
 
   async startServer() {
     let bin = path.join(this.serverRoot, 'bin', process.platform === 'win32' ? 'JuliaLS.exe' : 'JuliaLS');
-    let args: string[] = []
+    let args: string[] = [];
     if (!fs.existsSync(bin)) {
       bin = this.resolveJuliaBin()!;
       args = await this.prepareLS();
