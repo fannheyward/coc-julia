@@ -13,7 +13,7 @@ import fs from 'fs';
 import os from 'os';
 import path from 'path';
 import { promisify } from 'util';
-import { CompletionItem, CompletionList, NotificationType, Range } from 'vscode-languageserver-protocol';
+import { CompletionItem, CompletionList, NotificationType, Position, Range } from 'vscode-languageserver-protocol';
 import which from 'which';
 
 const execPromise = promisify(exec);
@@ -170,11 +170,15 @@ export class Ctx {
           const items: CompletionItem[] = [];
           if (res && Array.isArray(res.items)) {
             for (const item of res.items) {
-              const newText = item.textEdit?.newText;
-              if (newText && !newText.startsWith(input)) {
-                const range = Object.assign({}, item.textEdit?.range);
-                item.textEdit!.newText = `${input}${newText}`;
-                item.textEdit!.range = Range.create(range.start.line, range.start.character - input.length, range.end.line, range.end.character);
+              if (item.textEdit && item.kind !== 11) {
+                const newText = item.textEdit.newText;
+                if (!newText.startsWith(input)) {
+                  const range = Object.assign({}, item.textEdit.range);
+                  const start = Position.create(range.start.line, range.start.character - input.length);
+                  const end = Position.create(range.end.line, range.end.character);
+                  item.textEdit.newText = `${input}${newText}`;
+                  item.textEdit.range = Range.create(start, end);
+                }
               }
 
               items.push(item);
