@@ -59,7 +59,7 @@ export class Ctx {
     if (!fs.existsSync(context.storagePath)) {
       fs.mkdirSync(context.storagePath);
     }
-    this.serverRoot = path.join(context.storagePath, 'JuliaLS')
+    this.serverRoot = path.join(context.storagePath, 'JuliaLS');
     if (!fs.existsSync(this.serverRoot)) {
       fs.mkdirSync(this.serverRoot);
     }
@@ -121,11 +121,11 @@ export class Ctx {
   }
 
   async compileServer() {
-    workspace.showMessage(`PackageCompiler.jl will take about 10 mins to compile...`)
-    await workspace.createTerminal({name: 'coc-julia-ls'}).then((t) => {
-      const cmd = `cd ${path.join(this.context.extensionPath, 'server')} && sh ./compile.sh ${this.serverRoot}`
+    workspace.showMessage(`PackageCompiler.jl will take about 10 mins to compile...`);
+    await workspace.createTerminal({ name: 'coc-julia-ls' }).then((t) => {
+      const cmd = `cd ${path.join(this.context.extensionPath, 'server')} && sh ./compile.sh ${this.serverRoot}`;
       t.sendText(cmd);
-    })
+    });
   }
 
   private async prepareLS(): Promise<string[]> {
@@ -155,11 +155,18 @@ export class Ctx {
 
     const tmpdir = (await workspace.nvim.eval('$TMPDIR')) as string;
     const outputChannel = workspace.createOutputChannel('Julia Language Server Trace');
-    const serverOptions: ServerOptions = { command: bin, args, options: { env: { ...process.env, TMPDIR: tmpdir } } };
+    const serverOptions: ServerOptions = {
+      command: bin,
+      args,
+      options: { env: { ...process.env, TMPDIR: tmpdir } },
+    };
     const clientOptions: LanguageClientOptions = {
       documentSelector: ['julia', 'juliamarkdown'],
       initializationOptions: workspace.getConfiguration('julia'),
-      synchronize: { configurationSection: ['julia.lint', 'julia.format'], fileEvents: workspace.createFileSystemWatcher('**/*.{jl,jmd}') },
+      synchronize: {
+        configurationSection: ['julia.lint', 'julia.format'],
+        fileEvents: workspace.createFileSystemWatcher('**/*.{jl,jmd}'),
+      },
       progressOnInitialization: true,
       outputChannel,
       middleware: {
@@ -196,7 +203,12 @@ export class Ctx {
       client.onNotification(JuliaFullTextNotification.method, (uri) => {
         const doc = workspace.getDocument(uri);
         const params = {
-          textDocument: { uri: uri, languageId: 'julia', version: 1, text: doc.textDocument.getText() },
+          textDocument: {
+            uri: uri,
+            languageId: 'julia',
+            version: 1,
+            text: doc.textDocument.getText(),
+          },
         };
         client.sendNotification('julia/reloadText', params);
       });
