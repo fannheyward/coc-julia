@@ -6,7 +6,7 @@ env_path = ARGS[1]
 img_path = ARGS[2]
 
 project_file = joinpath(env_path, "Project.toml")
-sysimg_file  = joinpath(img_path, "sysimg.$(Libdl.Libdl.dlext)")
+sysimg_file  = joinpath(img_path, "sysimg.$(Libdl.dlext)")
 exec_file    = joinpath(joinpath(dirname(pathof(LanguageServer)), "../test/runtests.jl"))
 
 project  = Pkg.API.read_project(project_file)
