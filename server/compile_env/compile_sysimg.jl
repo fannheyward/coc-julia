@@ -14,4 +14,4 @@ packages = Symbol.(collect(keys(project.deps)))
 
 @info "Building a sysimage for the environment '$env_path' to '$img_path'."
 
-create_sysimage(packages; sysimage_path=sysimg_file, project=env_path)
+create_sysimage(packages; sysimage_path=sysimg_file, project=env_path, precompile_execution_file=exec_file)
