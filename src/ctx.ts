@@ -57,7 +57,7 @@ export class Ctx {
     this.config = new Config();
     this.lsProj = path.join(context.extensionPath, 'server', 'JuliaLS');
     this.mainJulia = path.join(context.extensionPath, 'server', 'JuliaLS/src/main.jl');
-    this.compileEnv = path.join(context.extensionPath, 'server', 'compile_env')
+    this.compileEnv = path.join(context.extensionPath, 'server', 'compile_env');
     if (!fs.existsSync(context.storagePath)) {
       fs.mkdirSync(context.storagePath);
     }
@@ -123,18 +123,18 @@ export class Ctx {
   }
 
   private async resolveSysimgPath() {
-    let sysimg_name:string = 'sysimg.so';
+    let sysimg_name = 'sysimg.so';
     switch (process.platform) {
-        case 'win32':
-            sysimg_name = 'sysimg.dll';
-            break;
-        case 'darwin':
-            sysimg_name = 'sysimg.dylib';
-            break;
-    };
+      case 'win32':
+        sysimg_name = 'sysimg.dll';
+        break;
+      case 'darwin':
+        sysimg_name = 'sysimg.dylib';
+        break;
+    }
     const sysimg = path.join(this.serverRoot, sysimg_name);
     if (fs.existsSync(sysimg)) {
-        return sysimg
+      return sysimg;
     }
     const bin = this.resolveJuliaBin()!;
     const cmd = `${bin} --project=${this.compileEnv} --startup-file=no --history-file=no -e "using PackageCompiler; println(PackageCompiler.default_sysimg_path())"`;
