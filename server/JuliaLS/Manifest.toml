@@ -70,12 +70,6 @@ uuid = "d6f4376e-aef5-505a-96c1-9c027394607a"
 [[Mmap]]
 uuid = "a63ad114-7e13-5084-954f-fe012c677804"
 
-[[PackageCompiler]]
-deps = ["Libdl", "Pkg", "UUIDs"]
-git-tree-sha1 = "3eee77c94646163f15bd8626acf494360897f890"
-uuid = "9b87118b-4619-50d2-8e1e-99f35a4d4d9d"
-version = "1.2.3"
-
 [[Parsers]]
 deps = ["Dates"]
 git-tree-sha1 = "b417be52e8be24e916e34b3d70ec2da7bdf56a68"
