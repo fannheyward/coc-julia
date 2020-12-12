@@ -25,9 +25,9 @@ version = "3.2.0"
 
 [[FilePathsBase]]
 deps = ["Dates", "Mmap", "Printf", "Test", "UUIDs"]
-git-tree-sha1 = "eea043eb9e9087e53815e9587e9106027c3c6b14"
+git-tree-sha1 = "74b340c6f78b6ee2699f8bd2f790a97f0122349f"
 uuid = "48062228-2e41-5def-b9a4-89aafe57970f"
-version = "0.9.5"
+version = "0.9.6"
 
 [[InteractiveUtils]]
 deps = ["Markdown"]
@@ -47,7 +47,7 @@ version = "1.2.0"
 
 [[LanguageServer]]
 deps = ["CSTParser", "DocumentFormat", "JSON", "JSONRPC", "Markdown", "REPL", "StaticLint", "SymbolServer", "Tokenize", "URIParser", "UUIDs"]
-git-tree-sha1 = "dcfe3c466bdfb4d476a6026b1e11526770333377"
+git-tree-sha1 = "89e2671c9e239c8956f39c1a39d0fe2bc3bc878b"
 repo-rev = "master"
 repo-url = "https://github.com/julia-vscode/LanguageServer.jl"
 uuid = "2b0e0bc5-e4fd-59b4-8912-456d1b03d8d7"
@@ -72,9 +72,9 @@ uuid = "a63ad114-7e13-5084-954f-fe012c677804"
 
 [[Parsers]]
 deps = ["Dates"]
-git-tree-sha1 = "b417be52e8be24e916e34b3d70ec2da7bdf56a68"
+git-tree-sha1 = "50c9a9ed8c714945e01cd53a21007ed3865ed714"
 uuid = "69de0a69-1ddd-5017-9359-2bf0b02dc9f0"
-version = "1.0.12"
+version = "1.0.15"
 
 [[Pkg]]
 deps = ["Dates", "LibGit2", "Libdl", "Logging", "Markdown", "Printf", "REPL", "Random", "SHA", "UUIDs"]
