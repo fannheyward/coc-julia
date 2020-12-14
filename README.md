@@ -8,7 +8,8 @@ Julia extension for coc.nvim
 
 ## Commands
 
-- `julia.CompileLanguageServer`: use PackageCompiler.jl to compile LanguageServer.jl
+- `julia.CompileLanguageServerBin`: use PackageCompiler.jl to compile LanguageServer.jl as a bin
+- `julia.CompileLanguageServerSysimg`: use PackageCompiler.jl to compile a sysiamge of LanguageServer.jl
 
 ## License
 

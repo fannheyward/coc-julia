@@ -52,16 +52,23 @@ export class Ctx {
   private lsProj: string;
   private mainJulia: string;
   private serverRoot: string;
+  private compileEnv: string;
+  private sysimgDir: string;
   constructor(private readonly context: ExtensionContext) {
     this.config = new Config();
     this.lsProj = path.join(context.extensionPath, 'server', 'JuliaLS');
-    this.mainJulia = path.join(context.extensionPath, 'server', 'main.jl');
+    this.mainJulia = path.join(context.extensionPath, 'server', 'JuliaLS/src/main.jl');
+    this.compileEnv = path.join(context.extensionPath, 'server', 'compile_env');
     if (!fs.existsSync(context.storagePath)) {
       fs.mkdirSync(context.storagePath);
     }
     this.serverRoot = path.join(context.storagePath, 'JuliaLS');
     if (!fs.existsSync(this.serverRoot)) {
       fs.mkdirSync(this.serverRoot);
+    }
+    this.sysimgDir = path.join(context.storagePath, 'sysimg');
+    if (!fs.existsSync(this.sysimgDir)) {
+      fs.mkdirSync(this.sysimgDir);
     }
   }
 
@@ -116,41 +123,75 @@ export class Ctx {
     }
 
     const bin = this.resolveJuliaBin()!;
-    const cmd = `${bin} --project="." --startup-file=no --history-file=no -e "using Pkg; println(dirname(Pkg.Types.Context().env.project_file))"`;
+    const cmd = `${bin} --project=@. --startup-file=no --history-file=no -e "using Pkg; println(dirname(Pkg.Types.Context().env.project_file))"`;
     return (await execPromise(cmd)).stdout.trim();
   }
 
-  async compileServer() {
-    workspace.showMessage(`PackageCompiler.jl will take about 10 mins to compile...`);
+  private async resolveSysimgPath() {
+    let sysimg_name = 'sysimg.so';
+    switch (process.platform) {
+      case 'win32':
+        sysimg_name = 'sysimg.dll';
+        break;
+      case 'darwin':
+        sysimg_name = 'sysimg.dylib';
+        break;
+    }
+    const sysimg = path.join(this.sysimgDir, sysimg_name);
+    if (fs.existsSync(sysimg)) {
+      return sysimg;
+    }
+    const bin = this.resolveJuliaBin()!;
+    const cmd = `${bin} --project=${this.compileEnv} --startup-file=no --history-file=no -e "import PackageCompiler; println(PackageCompiler.default_sysimg_path())"`;
+    return (await execPromise(cmd)).stdout.trim();
+  }
+
+  private async resolveExecFile() {
+    const bin = this.resolveJuliaBin()!;
+    const cmd = `${bin} --project=${this.lsProj} --startup-file=no --history-file=no -e "import LanguageServer; println(joinpath(dirname(pathof(LanguageServer)), \\"../test/runtests.jl\\"))"`;
+    return (await execPromise(cmd)).stdout.trim();
+  }
+
+  async compileServerSysimg() {
+    workspace.showMessage(`PackageCompiler.jl will take about 5 mins to compile...`);
+    const bin = this.resolveJuliaBin()!;
+    const execfile = await this.resolveExecFile();
     await workspace.createTerminal({ name: 'coc-julia-ls' }).then((t) => {
-      const cmd = `cd ${path.join(this.context.extensionPath, 'server')} && sh ./compile.sh ${this.serverRoot}`;
+      const cmd = `${bin} --project=${this.compileEnv} ${path.join(this.compileEnv, 'compile.jl')} -s ${this.lsProj} ${this.sysimgDir} ${execfile}`;
       t.sendText(cmd);
     });
   }
 
-  private async prepareLS(): Promise<string[]> {
+  async compileServerBin() {
+    workspace.showMessage(`PackageCompiler.jl will take about 10 mins to compile...`);
+    const bin = this.resolveJuliaBin()!;
+    const execfile = await this.resolveExecFile();
+    await workspace.createTerminal({ name: 'coc-julia-ls' }).then((t) => {
+      const cmd = `${bin} --project=${this.compileEnv} ${path.join(this.compileEnv, 'compile.jl')} -b ${this.lsProj} ${this.serverRoot} ${execfile}`;
+      t.sendText(cmd);
+    });
+  }
+
+  private async prepareJuliaArgs(): Promise<string[]> {
+    await this.resolveMissingPkgs();
+    const sysimg = await this.resolveSysimgPath();
+    return ['--startup-file=no', '--history-file=no', `--sysimage=${sysimg}`, '--depwarn=no', `--project=${this.lsProj}`, this.mainJulia];
+  }
+
+  private async prepareLSArgs(): Promise<string[]> {
     await this.resolveMissingPkgs();
     const env = await this.resolveEnvPath();
     const depopPath = process.env.JULIA_DEPOT_PATH ? process.env.JULIA_DEPOT_PATH : '';
-    return [
-      '--startup-file=no',
-      '--history-file=no',
-      '--depwarn=no',
-      `--project=${this.lsProj}`,
-      this.mainJulia,
-      env,
-      '--debug=no',
-      depopPath,
-      this.context.storagePath,
-    ];
+    return [env, '--debug=no', depopPath, this.context.storagePath];
   }
 
   async startServer() {
     let bin = path.join(this.serverRoot, 'bin', process.platform === 'win32' ? 'JuliaLS.exe' : 'JuliaLS');
-    let args: string[] = [];
+    let args: string[] = await this.prepareLSArgs();
     if (!fs.existsSync(bin)) {
       bin = this.resolveJuliaBin()!;
-      args = await this.prepareLS();
+      const juliaArgs = await this.prepareJuliaArgs();
+      args = juliaArgs.concat(args);
     }
 
     const tmpdir = (await workspace.nvim.eval('$TMPDIR')) as string;
@@ -215,3 +256,5 @@ export class Ctx {
     });
   }
 }
+
+/* vim: set ts=2 sw=2: */
