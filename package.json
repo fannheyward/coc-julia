@@ -182,8 +182,12 @@
     },
     "commands": [
       {
-        "command": "julia.CompileLanguageServer",
-        "title": "Use PackageCompiler.jl to compile LanguageServer.jl"
+        "command": "julia.CompileLanguageServerBin",
+        "title": "Use PackageCompiler.jl to compile LanguageServer.jl as a bin"
+      },
+      {
+        "command": "julia.CompileLanguageServerSysimg",
+        "title": "Use PackageCompiler.jl to compile a sysimage of LanguageServer.jl"
       }
     ]
   }
