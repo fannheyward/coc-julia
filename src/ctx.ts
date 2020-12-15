@@ -13,11 +13,10 @@ import fs from 'fs';
 import os from 'os';
 import path from 'path';
 import { promisify } from 'util';
-import { CompletionItem, CompletionList, NotificationType, Position, Range } from 'vscode-languageserver-protocol';
+import { CompletionItem, CompletionList, Position, Range, TextEdit } from 'vscode-languageserver-protocol';
 import which from 'which';
 
 const execPromise = promisify(exec);
-const JuliaFullTextNotification = new NotificationType<string, string>('julia/getFullText');
 
 class Config {
   private cfg: WorkspaceConfiguration;
@@ -218,7 +217,7 @@ export class Ctx {
           const items: CompletionItem[] = [];
           if (res && Array.isArray(res.items)) {
             for (const item of res.items) {
-              if (item.textEdit && item.kind !== 11) {
+              if (item.textEdit && TextEdit.is(item.textEdit) && item.kind !== 11) {
                 const newText = item.textEdit.newText;
                 if (!newText.startsWith(input)) {
                   const range = Object.assign({}, item.textEdit.range);
@@ -240,20 +239,6 @@ export class Ctx {
 
     const client = new LanguageClient('julia', 'Julia Language Server', serverOptions, clientOptions);
     this.context.subscriptions.push(services.registLanguageClient(client));
-    await client.onReady().then(() => {
-      client.onNotification(JuliaFullTextNotification.method, (uri) => {
-        const doc = workspace.getDocument(uri);
-        const params = {
-          textDocument: {
-            uri: uri,
-            languageId: 'julia',
-            version: 1,
-            text: doc.textDocument.getText(),
-          },
-        };
-        client.sendNotification('julia/reloadText', params);
-      });
-    });
   }
 }
 
