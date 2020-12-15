@@ -102,14 +102,15 @@ export class Ctx {
     return pkgs;
   }
 
-  private async resolveMissingPkgs(): Promise<void> {
+  private async resolveMissingPkgs(projPath: string): Promise<void> {
     const bin = this.resolveJuliaBin()!;
-    let cmd = `${bin} --project="${this.lsProj}" --startup-file=no --history-file=no -e "using Pkg; Pkg.status()"`;
+    let cmd = `${bin} --project="${projPath}" --startup-file=no --history-file=no -e "using Pkg; Pkg.status()"`;
     const pkgs = this.formatPkg((await execPromise(cmd)).stdout.split('\n'));
     if (pkgs.some((p) => p.state === '→')) {
-      const ok = await workspace.showPrompt(`Some LanguageServer.jl deps are missing, would you like to install now?`);
+      const projName = path.basename(projPath);
+      const ok = await workspace.showPrompt(`Some ${projName} deps are missing, would you like to install now?`);
       if (ok) {
-        cmd = `${bin} --project="${this.lsProj}" --startup-file=no --history-file=no -e "using Pkg; Pkg.instantiate()"`;
+        cmd = `${bin} --project="${projPath}" --startup-file=no --history-file=no -e "using Pkg; Pkg.instantiate()"`;
 
         await workspace.createTerminal({ name: 'coc-julia-ls' }).then((t) => t.sendText(cmd));
       }
@@ -172,22 +173,22 @@ export class Ctx {
   }
 
   private async prepareJuliaArgs(): Promise<string[]> {
-    await this.resolveMissingPkgs();
     const sysimg = await this.resolveSysimgPath();
     return ['--startup-file=no', '--history-file=no', `--sysimage=${sysimg}`, '--depwarn=no', `--project=${this.lsProj}`, this.mainJulia];
   }
 
   private async prepareLSArgs(): Promise<string[]> {
-    await this.resolveMissingPkgs();
     const env = await this.resolveEnvPath();
     const depopPath = process.env.JULIA_DEPOT_PATH ? process.env.JULIA_DEPOT_PATH : '';
     return [env, '--debug=no', depopPath, this.context.storagePath];
   }
 
   async startServer() {
+    await this.resolveMissingPkgs(this.compileEnv);
     let bin = path.join(this.serverRoot, 'bin', process.platform === 'win32' ? 'JuliaLS.exe' : 'JuliaLS');
     let args: string[] = await this.prepareLSArgs();
     if (!fs.existsSync(bin)) {
+      await this.resolveMissingPkgs(this.lsProj);
       bin = this.resolveJuliaBin()!;
       const juliaArgs = await this.prepareJuliaArgs();
       args = juliaArgs.concat(args);
