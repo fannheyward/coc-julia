@@ -9,8 +9,11 @@ import {
   Position,
   Range,
   ServerOptions,
-  services, TextEdit, window, workspace,
-  WorkspaceConfiguration
+  services,
+  TextEdit,
+  window,
+  workspace,
+  WorkspaceConfiguration,
 } from 'coc.nvim';
 import fs from 'fs';
 import os from 'os';
