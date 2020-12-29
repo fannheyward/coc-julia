@@ -1,4 +1,4 @@
-import { commands, ExtensionContext, workspace } from 'coc.nvim';
+import { commands, ExtensionContext, window } from 'coc.nvim';
 import { Ctx } from './ctx';
 
 export async function activate(context: ExtensionContext): Promise<void> {
@@ -7,7 +7,7 @@ export async function activate(context: ExtensionContext): Promise<void> {
 
   const bin = ctx.resolveJuliaBin();
   if (!bin) {
-    workspace.showMessage(`Can't find julia`, 'warning');
+    window.showMessage(`Can't find julia`, 'warning');
     return;
   }
 

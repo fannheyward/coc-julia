@@ -1,19 +1,21 @@
 import { exec } from 'child_process';
 import {
   CompletionContext,
+  CompletionItem,
+  CompletionList,
   ExtensionContext,
   LanguageClient,
   LanguageClientOptions,
+  Position,
+  Range,
   ServerOptions,
-  services,
-  workspace,
-  WorkspaceConfiguration,
+  services, TextEdit, window, workspace,
+  WorkspaceConfiguration
 } from 'coc.nvim';
 import fs from 'fs';
 import os from 'os';
 import path from 'path';
 import { promisify } from 'util';
-import { CompletionItem, CompletionList, Position, Range, TextEdit } from 'vscode-languageserver-protocol';
 import which from 'which';
 
 const execPromise = promisify(exec);
@@ -108,7 +110,7 @@ export class Ctx {
     const pkgs = this.formatPkg((await execPromise(cmd)).stdout.split('\n'));
     if (pkgs.some((p) => p.state === '→')) {
       const projName = path.basename(projPath);
-      const ok = await workspace.showPrompt(`Some ${projName} deps are missing, would you like to install now?`);
+      const ok = await window.showPrompt(`Some ${projName} deps are missing, would you like to install now?`);
       if (ok) {
         cmd = `${bin} --project="${projPath}" --startup-file=no --history-file=no -e "using Pkg; Pkg.instantiate()"`;
 
@@ -153,7 +155,7 @@ export class Ctx {
   }
 
   async compileServerSysimg() {
-    workspace.showMessage(`PackageCompiler.jl will take about 5 mins to compile...`);
+    window.showMessage(`PackageCompiler.jl will take about 5 mins to compile...`);
     const bin = this.resolveJuliaBin()!;
     const execfile = await this.resolveExecFile();
     await workspace.createTerminal({ name: 'coc-julia-ls' }).then((t) => {
@@ -163,7 +165,7 @@ export class Ctx {
   }
 
   async compileServerBin() {
-    workspace.showMessage(`PackageCompiler.jl will take about 10 mins to compile...`);
+    window.showMessage(`PackageCompiler.jl will take about 10 mins to compile...`);
     const bin = this.resolveJuliaBin()!;
     const execfile = await this.resolveExecFile();
     await workspace.createTerminal({ name: 'coc-julia-ls' }).then((t) => {
@@ -195,7 +197,7 @@ export class Ctx {
     }
 
     const tmpdir = (await workspace.nvim.eval('$TMPDIR')) as string;
-    const outputChannel = workspace.createOutputChannel('Julia Language Server Trace');
+    const outputChannel = window.createOutputChannel('Julia Language Server Trace');
     const serverOptions: ServerOptions = {
       command: bin,
       args,
@@ -212,6 +214,7 @@ export class Ctx {
       outputChannel,
       middleware: {
         provideCompletionItem: async (document, position, context: CompletionContext, token, next) => {
+          // @ts-ignore
           const option = context.option!;
           const input = option.input.startsWith(option.word) ? option.input : option.word + option.input;
           const res = (await next(document, position, context, token)) as CompletionList;
