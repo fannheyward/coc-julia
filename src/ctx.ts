@@ -200,7 +200,6 @@ export class Ctx {
     }
 
     const tmpdir = (await workspace.nvim.eval('$TMPDIR')) as string;
-    const outputChannel = window.createOutputChannel('Julia Language Server Trace');
     const serverOptions: ServerOptions = {
       command: bin,
       args,
@@ -214,7 +213,6 @@ export class Ctx {
         fileEvents: workspace.createFileSystemWatcher('**/*.{jl,jmd}'),
       },
       progressOnInitialization: true,
-      outputChannel,
       middleware: {
         provideCompletionItem: async (document, position, context: CompletionContext, token, next) => {
           // @ts-ignore
