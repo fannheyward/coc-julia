@@ -60,9 +60,9 @@ export class Ctx {
   private sysimgDir: string;
   constructor(private readonly context: ExtensionContext) {
     this.config = new Config();
-    this.lsProj = path.join(context.extensionPath, 'server', 'JuliaLS');
-    this.mainJulia = path.join(context.extensionPath, 'server', 'JuliaLS/src/main.jl');
-    this.compileEnv = path.join(context.extensionPath, 'server', 'compile_env');
+    this.lsProj = path.join(context.extensionPath, 'server', 'JuliaLS'); // lgtm [js/shell-command-constructed-from-input]
+    this.mainJulia = path.join(context.extensionPath, 'server', 'JuliaLS/src/main.jl'); // lgtm [js/shell-command-constructed-from-input]
+    this.compileEnv = path.join(context.extensionPath, 'server', 'compile_env'); // lgtm [js/shell-command-constructed-from-input]
     if (!fs.existsSync(context.storagePath)) {
       fs.mkdirSync(context.storagePath);
     }
