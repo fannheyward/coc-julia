@@ -19,7 +19,7 @@
     "prepare": "node esbuild.js"
   },
   "devDependencies": {
-    "@types/node": "^14.0.6",
+    "@types/node": "^15.0.0",
     "@types/which": "^2.0.0",
     "@typescript-eslint/eslint-plugin": "^4.9.1",
     "@typescript-eslint/parser": "^4.9.1",
