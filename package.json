@@ -1,6 +1,6 @@
 {
   "name": "coc-julia",
-  "version": "0.8.0",
+  "version": "0.8.1",
   "description": "Julia extension for coc.nvim",
   "author": "Heyward Fann <fannheyward@gmail.com>",
   "license": "MIT",
