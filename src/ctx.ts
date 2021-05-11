@@ -1,14 +1,5 @@
 import { exec } from 'child_process';
-import {
-  ExtensionContext,
-  LanguageClient,
-  LanguageClientOptions,
-  ServerOptions,
-  services,
-  window,
-  workspace,
-  WorkspaceConfiguration
-} from 'coc.nvim';
+import { ExtensionContext, LanguageClient, LanguageClientOptions, ServerOptions, services, window, workspace, WorkspaceConfiguration } from 'coc.nvim';
 import fs from 'fs';
 import os from 'os';
 import path from 'path';
