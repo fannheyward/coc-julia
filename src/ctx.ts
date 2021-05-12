@@ -1,5 +1,19 @@
 import { exec } from 'child_process';
-import { ExtensionContext, LanguageClient, LanguageClientOptions, ServerOptions, services, window, workspace, WorkspaceConfiguration } from 'coc.nvim';
+import {
+  CompletionItem,
+  CompletionList,
+  ExtensionContext,
+  LanguageClient,
+  LanguageClientOptions,
+  Position,
+  Range,
+  ServerOptions,
+  services,
+  TextEdit,
+  window,
+  workspace,
+  WorkspaceConfiguration,
+} from 'coc.nvim';
 import fs from 'fs';
 import os from 'os';
 import path from 'path';
@@ -198,6 +212,33 @@ export class Ctx {
         fileEvents: workspace.createFileSystemWatcher('**/*.{jl,jmd}'),
       },
       progressOnInitialization: true,
+      middleware: {
+        provideCompletionItem: async (document, position, context, token, next) => {
+          // @ts-ignore
+          const option = context.option!;
+          const input = option.input.startsWith(option.word) ? option.input : option.word + option.input;
+          const res = (await next(document, position, context, token)) as CompletionList;
+          const items: CompletionItem[] = [];
+          if (res && Array.isArray(res.items)) {
+            for (const item of res.items) {
+              if (item.textEdit && TextEdit.is(item.textEdit) && item.kind === 14) {
+                const newText = item.textEdit.newText;
+                if (!newText.startsWith(input)) {
+                  const range = Object.assign({}, item.textEdit.range);
+                  const start = Position.create(range.start.line, range.start.character - input.length);
+                  const end = Position.create(range.end.line, range.end.character);
+                  item.textEdit.newText = `${input}${newText}`;
+                  item.textEdit.range = Range.create(start, end);
+                }
+              }
+
+              items.push(item);
+            }
+          }
+
+          return { items, isIncomplete: res.isIncomplete };
+        },
+      },
     };
 
     const client = new LanguageClient('julia', 'Julia Language Server', serverOptions, clientOptions);
