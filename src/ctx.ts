@@ -150,18 +150,11 @@ export class Ctx {
     return (await execPromise(cmd)).stdout.trim();
   }
 
-  private async resolveExecFile() {
-    const bin = this.resolveJuliaBin()!;
-    const cmd = `${bin} --project=${this.lsProj} --startup-file=no --history-file=no -e "import LanguageServer; println(joinpath(dirname(pathof(LanguageServer)), \\"../test/runtests.jl\\"))"`;
-    return (await execPromise(cmd)).stdout.trim();
-  }
-
   async compileServerSysimg() {
     window.showMessage(`PackageCompiler.jl will take about 5 mins to compile...`);
     const bin = this.resolveJuliaBin()!;
-    const execfile = await this.resolveExecFile();
     await workspace.createTerminal({ name: 'coc-julia-ls' }).then((t) => {
-      const cmd = `${bin} --project=${this.compileEnv} ${path.join(this.compileEnv, 'compile.jl')} -s ${this.lsProj} ${this.sysimgDir} ${execfile}`;
+      const cmd = `${bin} --project=${this.compileEnv} ${path.join(this.compileEnv, 'compile.jl')} -s ${this.lsProj} ${this.sysimgDir}`;
       t.sendText(cmd);
     });
   }
@@ -169,9 +162,8 @@ export class Ctx {
   async compileServerBin() {
     window.showMessage(`PackageCompiler.jl will take about 10 mins to compile...`);
     const bin = this.resolveJuliaBin()!;
-    const execfile = await this.resolveExecFile();
     await workspace.createTerminal({ name: 'coc-julia-ls' }).then((t) => {
-      const cmd = `${bin} --project=${this.compileEnv} ${path.join(this.compileEnv, 'compile.jl')} -b ${this.lsProj} ${this.serverRoot} ${execfile}`;
+      const cmd = `${bin} --project=${this.compileEnv} ${path.join(this.compileEnv, 'compile.jl')} -b ${this.lsProj} ${this.serverRoot}`;
       t.sendText(cmd);
     });
   }
