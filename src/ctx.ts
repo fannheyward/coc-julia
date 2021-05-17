@@ -213,7 +213,7 @@ export class Ctx {
           const items: CompletionItem[] = [];
           if (res && Array.isArray(res.items)) {
             for (const item of res.items) {
-              if (item.textEdit && TextEdit.is(item.textEdit) && item.kind === 14) {
+              if (item.textEdit && TextEdit.is(item.textEdit) && (item.kind === 14 || item.kind === 17)) {
                 const newText = item.textEdit.newText;
                 if (!newText.startsWith(input)) {
                   const range = Object.assign({}, item.textEdit.range);
