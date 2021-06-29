@@ -1,6 +1,6 @@
 # coc-julia
 
-Julia extension for coc.nvim
+Julia extension for coc.nvim provides support the Julia Programming Language with [LanguageServer.jl](https://github.com/julia-vscode/LanguageServer.jl).
 
 ## Install
 
