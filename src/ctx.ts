@@ -190,7 +190,7 @@ export class Ctx {
       args = juliaArgs.concat(args);
     }
 
-    const tmpdir = (await workspace.nvim.eval('$TMPDIR')) as string;
+    const tmpdir = ((await workspace.nvim.eval('$TMPDIR')) as string) || process.env.TMPDIR || process.env.TMP;
     const serverOptions: ServerOptions = {
       command: bin,
       args,
