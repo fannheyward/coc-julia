@@ -11,9 +11,9 @@ uuid = "2a0f44e3-6c83-55bd-87e4-b1978d98bd5f"
 
 [[CSTParser]]
 deps = ["Tokenize"]
-git-tree-sha1 = "980055cab361b4bb77a3a158cec60375d0292a1a"
+git-tree-sha1 = "b2667530e42347b10c10ba6623cfebc09ac5c7b6"
 uuid = "00ebfdb7-1f24-5e51-bd34-a7502290713f"
-version = "3.2.2"
+version = "3.2.4"
 
 [[Dates]]
 deps = ["Printf"]
@@ -41,9 +41,9 @@ uuid = "b77e0a4c-d291-57a0-90e8-8db25a27a240"
 
 [[JSON]]
 deps = ["Dates", "Mmap", "Parsers", "Unicode"]
-git-tree-sha1 = "81690084b6198a2e1da36fcfda16eeca9f9f24e4"
+git-tree-sha1 = "8076680b162ada2a031f707ac7b4953e30667a37"
 uuid = "682c06a0-de6a-54ab-a142-c8b1cf79cde6"
-version = "0.21.1"
+version = "0.21.2"
 
 [[JSONRPC]]
 deps = ["JSON", "UUIDs"]
@@ -53,11 +53,11 @@ version = "1.3.3"
 
 [[LanguageServer]]
 deps = ["CSTParser", "DocumentFormat", "JSON", "JSONRPC", "Markdown", "Pkg", "REPL", "StaticLint", "SymbolServer", "Tokenize", "URIParser", "UUIDs"]
-git-tree-sha1 = "8d8408edb3b4bd8d1266901b9aac3f540b04fdfe"
+git-tree-sha1 = "b8964d0c3e5745e57667e4442607f1c2afee7f8e"
 repo-rev = "master"
 repo-url = "https://github.com/julia-vscode/LanguageServer.jl.git"
 uuid = "2b0e0bc5-e4fd-59b4-8912-456d1b03d8d7"
-version = "4.0.1-DEV"
+version = "4.1.1-DEV"
 
 [[LibCURL]]
 deps = ["LibCURL_jll", "MozillaCACerts_jll"]
@@ -100,9 +100,9 @@ uuid = "ca575930-c2e3-43a9-ace4-1e988b2c1908"
 
 [[Parsers]]
 deps = ["Dates"]
-git-tree-sha1 = "c8abc88faa3f7a3950832ac5d6e690881590d6dc"
+git-tree-sha1 = "477bf42b4d1496b454c10cce46645bb5b8a0cf2c"
 uuid = "69de0a69-1ddd-5017-9359-2bf0b02dc9f0"
-version = "1.1.0"
+version = "2.0.2"
 
 [[Pkg]]
 deps = ["Artifacts", "Dates", "Downloads", "LibGit2", "Libdl", "Logging", "Markdown", "Printf", "REPL", "Random", "SHA", "Serialization", "TOML", "Tar", "UUIDs", "p7zip_jll"]
@@ -131,15 +131,15 @@ uuid = "6462fe0b-24de-5631-8697-dd941f90decc"
 
 [[StaticLint]]
 deps = ["CSTParser", "Serialization", "SymbolServer"]
-git-tree-sha1 = "337ca6f234947b31e921a424f7d0ec8dda22ed49"
+git-tree-sha1 = "cb3b96572fa30bf80f281eb4efedca8f29e27bc3"
 uuid = "b3cc710f-9c33-5bdb-a03d-a94903873e97"
-version = "8.0.0"
+version = "8.0.1"
 
 [[SymbolServer]]
 deps = ["InteractiveUtils", "LibGit2", "Markdown", "Pkg", "REPL", "SHA", "Serialization", "Sockets", "UUIDs"]
-git-tree-sha1 = "9053544866f779dfb87027c52a332e2830e868ab"
+git-tree-sha1 = "8af62a2e7fa43e6cdb9cfba44e2a7f673724f2c9"
 uuid = "cf896787-08d5-524d-9de7-132aaa0cb996"
-version = "7.0.0"
+version = "7.0.1"
 
 [[TOML]]
 deps = ["Dates"]
@@ -154,9 +154,9 @@ deps = ["InteractiveUtils", "Logging", "Random", "Serialization"]
 uuid = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 
 [[Tokenize]]
-git-tree-sha1 = "15318136d8b7a91a0e49916ec931cc51d5456ab2"
+git-tree-sha1 = "eee92eda3cc8e104b7e56ff4c1fcf0d78ca37c89"
 uuid = "0796e94c-ce3b-5d07-9a54-7f471281c624"
-version = "0.5.16"
+version = "0.5.18"
 
 [[URIParser]]
 deps = ["Unicode"]
