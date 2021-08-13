@@ -109,7 +109,7 @@ export class Ctx {
   private async resolveMissingPkgs(projPath: string): Promise<void> {
     const bin = this.resolveJuliaBin()!;
     let cmd = `${bin} --project="${projPath}" --startup-file=no --history-file=no -e "using Pkg; Pkg.status()"`;
-    const pkgs = this.formatPkg((await execPromise(cmd)).stderr.split('\n'));
+    const pkgs = this.formatPkg((await execPromise(cmd)).stdout.split('\n'));
     if (pkgs.some((p) => p.state === '→')) {
       const projName = path.basename(projPath);
       const ok = await window.showPrompt(`Some ${projName} deps are missing, would you like to install now?`);
