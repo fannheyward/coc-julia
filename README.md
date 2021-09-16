@@ -11,6 +11,32 @@ Julia extension for coc.nvim provides support the Julia Programming Language wit
 
 `:CocInstall coc-julia`
 
+## Configurations
+
+| Configuration          | Description                                                      | Default |
+| ---------------------- | ---------------------------------------------------------------- | ------- |
+| julia.enabled          | Enable coc-julia extension                                       | `true`  |
+| julia.executablePath   | Points to the Julia executable.                                  | `''`    |
+| julia.environmentPath  | Path to a julia environment.                                     | `null`  |
+| julia.format.indent    | Indent size for formatting.                                      | `4`     |
+| julia.format.indents   | Format file indents.                                             | `true`  |
+| julia.format.ops       | Format whitespace around operators.                              | `true`  |
+| julia.format.tuples    | Format tuples.                                                   | `true`  |
+| julia.format.curly     | Format braces.                                                   | `true`  |
+| julia.format.calls     | Format loop iterators.                                           | `true`  |
+| julia.format.comments  | Format comments.                                                 | `true`  |
+| julia.format.docs      | Format inline documentation.                                     | `true`  |
+| julia.format.kw        | Remove spaces around = in function keywords.                     | `true`  |
+| julia.lint.run         | Run the linter on active files.                                  | `true`  |
+| julia.lint.missingrefs | Report possibly missing references.                              | `true`  |
+| julia.lint.call        | Check calls against existing methods. (experimental)             | `false` |
+| julia.lint.constif     | Check for constant conditionals of if statements.                | `true`  |
+| julia.lint.lazy        | Check for deterministic lazy boolean operators.                  | `true`  |
+| julia.lint.typeparam   | Check for unused DataType parameters.                            | `true`  |
+| julia.lint.modname     | Check for invalid submodule names.                               | `true`  |
+| julia.lint.pirates     | Check for type piracy.                                           | `true`  |
+| julia.trace.server     | Traces the communication between client and the language server. | `off`   |
+
 ## Commands
 
 - `julia.CompileLanguageServerBin`: use PackageCompiler.jl to compile LanguageServer.jl as a bin
