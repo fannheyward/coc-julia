@@ -36,6 +36,7 @@
   "activationEvents": [
     "onLanguage:julia",
     "onLanguage:juliamarkdown",
+    "workspaceContains:**/Project.toml",
     "workspaceContains:deps/build.jl",
     "workspaceContains:test/runtests.jl",
     "workspaceContains:benchmark/benchmarks.jl",
@@ -47,6 +48,14 @@
     "semi": true
   },
   "contributes": {
+    "rootPatterns": [
+      {
+        "filetype": "julia",
+        "patterns": [
+          "Project.toml"
+        ]
+      }
+    ],
     "configuration": {
       "type": "object",
       "title": "coc-julia configuration",
