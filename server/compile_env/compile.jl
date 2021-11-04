@@ -15,7 +15,7 @@ function compile_sysimg(args::Vector{<:AbstractString})
     end
 
     project_file = joinpath(env_path, "Project.toml")
-    sysimg_file  = joinpath(img_path, "sysimg.$(Libdl.dlext)")
+    sysimg_file  = joinpath(img_path, "sys.$(Libdl.dlext)")
 
     project  = Pkg.API.read_project(project_file)
     packages = Symbol.(collect(keys(project.deps)))

@@ -132,22 +132,20 @@ export class Ctx {
   }
 
   private async resolveSysimgPath() {
-    let sysimg_name = 'sysimg.so';
-    switch (process.platform) {
-      case 'win32':
-        sysimg_name = 'sysimg.dll';
-        break;
-      case 'darwin':
-        sysimg_name = 'sysimg.dylib';
-        break;
-    }
+    const sysimgs = {
+      darwin: 'sys.dylib',
+      linux: 'sys.so',
+      win32: 'sys.dll',
+    };
+    const sysimg_name = sysimgs[process.platform];
     const sysimg = path.join(this.sysimgDir, sysimg_name);
     if (fs.existsSync(sysimg)) {
       return sysimg;
     }
     const bin = this.resolveJuliaBin()!;
-    const cmd = `${bin} --project=${this.compileEnv} --startup-file=no --history-file=no -e "import PackageCompiler; println(PackageCompiler.default_sysimg_path())"`;
-    return (await execPromise(cmd)).stdout.trim();
+    const cmd = `${bin} --project=${this.compileEnv} --startup-file=no --history-file=no -e "print(Base.Sys.BINDIR)"`;
+    const bindir = (await execPromise(cmd)).stdout.trim();
+    return path.join(path.dirname(bindir), 'lib', 'julia', sysimg_name);
   }
 
   async compileServerSysimg() {
