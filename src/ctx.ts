@@ -198,7 +198,7 @@ export class Ctx {
       documentSelector: ['julia', 'juliamarkdown'],
       initializationOptions: workspace.getConfiguration('julia'),
       synchronize: {
-        configurationSection: ['julia.lint', 'julia.format'],
+        configurationSection: ['julia.lint'],
         fileEvents: workspace.createFileSystemWatcher('**/*.{jl,jmd}'),
       },
       progressOnInitialization: true,
