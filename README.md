@@ -30,7 +30,6 @@ Julia extension for coc.nvim provides support the Julia Programming Language wit
 
 ## Commands
 
-- `julia.CompileLanguageServerBin`: use PackageCompiler.jl to compile LanguageServer.jl as a bin
 - `julia.CompileLanguageServerSysimg`: use PackageCompiler.jl to compile a sysimage of LanguageServer.jl.
 
 ## License
