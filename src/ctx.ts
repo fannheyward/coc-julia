@@ -60,7 +60,7 @@ export class Ctx {
   constructor(private readonly context: ExtensionContext) {
     this.config = new Config();
     this.lsProj = path.join(context.extensionPath, 'server', 'JuliaLS'); // lgtm[js/shell-command-constructed-from-input]
-    this.mainJulia = path.join(context.extensionPath, 'server', 'JuliaLS/src/main.jl'); // lgtm[js/shell-command-constructed-from-input]
+    this.mainJulia = path.join(this.lsProj, 'src', 'main.jl'); // lgtm[js/shell-command-constructed-from-input]
     this.compileEnv = path.join(context.extensionPath, 'server', 'compile_env'); // lgtm[js/shell-command-constructed-from-input]
     if (!fs.existsSync(context.storagePath)) {
       fs.mkdirSync(context.storagePath);
@@ -148,20 +148,13 @@ export class Ctx {
     return path.join(path.dirname(bindir), 'lib', 'julia', sysimg_name);
   }
 
-  async compileServerSysimg() {
+  async compileServerSysimg(args: string[]) {
     window.showMessage(`PackageCompiler.jl will take about 5 mins to compile...`);
     const bin = this.resolveJuliaBin()!;
     await workspace.createTerminal({ name: 'coc-julia-ls' }).then((t) => {
-      const cmd = `${bin} --project=${this.compileEnv} ${path.join(this.compileEnv, 'compile.jl')} -s ${this.lsProj} ${this.sysimgDir}`;
-      t.sendText(cmd);
-    });
-  }
-
-  async compileServerBin() {
-    window.showMessage(`PackageCompiler.jl will take about 10 mins to compile...`);
-    const bin = this.resolveJuliaBin()!;
-    await workspace.createTerminal({ name: 'coc-julia-ls' }).then((t) => {
-      const cmd = `${bin} --project=${this.compileEnv} ${path.join(this.compileEnv, 'compile.jl')} -b ${this.lsProj} ${this.serverRoot}`;
+      args.unshift(path.join(this.lsProj, 'src', 'format.jl'));
+      const files = args.join(' ');
+      const cmd = `${bin} --project=${this.compileEnv} ${path.join(this.compileEnv, 'compile.jl')} -s ${this.lsProj} ${this.sysimgDir} ${files}`;
       t.sendText(cmd);
     });
   }

@@ -14,11 +14,8 @@ export async function activate(context: ExtensionContext): Promise<void> {
   await ctx.startServer();
 
   context.subscriptions.push(
-    commands.registerCommand('julia.CompileLanguageServerBin', async () => {
-      await ctx.compileServerBin();
-    }),
-    commands.registerCommand('julia.CompileLanguageServerSysimg', async () => {
-      await ctx.compileServerSysimg();
+    commands.registerCommand('julia.CompileLanguageServerSysimg', async (...args: string[]) => {
+      await ctx.compileServerSysimg(args);
     })
   );
 }
