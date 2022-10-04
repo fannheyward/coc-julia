@@ -2,5 +2,9 @@ using Pkg
 using LanguageServer
 using LanguageServer.JuliaFormatter
 
-Pkg.test("LanguageServer")
+try
+  Pkg.test("LanguageServer")
+catch
+end
+
 JuliaFormatter.format(@__FILE__)
