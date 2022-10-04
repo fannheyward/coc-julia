@@ -1,5 +1,5 @@
 src
-!server/JuliaLS/src
+!server/src
 node_modules
 tsconfig.json
 *.map
