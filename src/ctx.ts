@@ -1,4 +1,4 @@
-import { exec } from 'child_process';
+import { execSync } from 'child_process';
 import {
   CompletionItem,
   CompletionList,
@@ -17,10 +17,7 @@ import {
 import fs from 'fs';
 import os from 'os';
 import path from 'path';
-import { promisify } from 'util';
 import which from 'which';
-
-const execPromise = promisify(exec);
 
 class Config {
   private cfg: WorkspaceConfiguration;
@@ -52,9 +49,9 @@ interface Pkg {
 
 export class Ctx {
   public readonly config: Config;
+  private pkging = false;
   private lsProj: string;
   private mainJulia: string;
-  private serverRoot: string;
   private compileEnv: string;
   private sysimgDir: string;
   constructor(private readonly context: ExtensionContext) {
@@ -65,11 +62,8 @@ export class Ctx {
     if (!fs.existsSync(context.storagePath)) {
       fs.mkdirSync(context.storagePath);
     }
-    this.serverRoot = path.join(context.storagePath, 'JuliaLS');
-    if (!fs.existsSync(this.serverRoot)) {
-      fs.mkdirSync(this.serverRoot);
-    }
-    this.sysimgDir = path.join(context.storagePath, 'sysimg');
+    const version = this.resolveJuliaVersion();
+    this.sysimgDir = path.join(context.storagePath, `sysimg-${version}`);
     if (!fs.existsSync(this.sysimgDir)) {
       fs.mkdirSync(this.sysimgDir);
     }
@@ -86,6 +80,12 @@ export class Ctx {
 
     const cmd = process.platform === 'win32' ? 'julia.exe' : 'julia';
     return which.sync(cmd, { nothrow: true });
+  }
+
+  private resolveJuliaVersion(): string {
+    const bin = this.resolveJuliaBin()!;
+    const cmd = `${bin} --startup-file=no --history-file=no -e "println(VERSION)"`;
+    return execSync(cmd).toString().trim();
   }
 
   private formatPkg(vals: string[]): Pkg[] {
@@ -109,14 +109,15 @@ export class Ctx {
   private async resolveMissingPkgs(projPath: string): Promise<void> {
     const bin = this.resolveJuliaBin()!;
     let cmd = `${bin} --project="${projPath}" --startup-file=no --history-file=no -e "using Pkg; Pkg.status()"`;
-    const pkgs = this.formatPkg((await execPromise(cmd)).stdout.split('\n'));
+    const pkgs = this.formatPkg(execSync(cmd).toString().split('\n'));
     if (pkgs.some((p) => p.state === '→')) {
       const projName = path.basename(projPath);
       const ok = await window.showPrompt(`Some ${projName} deps are missing, would you like to install now?`);
       if (ok) {
+        this.pkging = true;
         cmd = `${bin} --project="${projPath}" --startup-file=no --history-file=no -e "using Pkg; Pkg.instantiate()"`;
 
-        await workspace.createTerminal({ name: 'coc-julia-ls' }).then((t) => t.sendText(cmd));
+        await window.createTerminal({ name: 'coc-julia-ls' }).then((t) => t.sendText(cmd));
       }
     }
   }
@@ -128,7 +129,7 @@ export class Ctx {
 
     const bin = this.resolveJuliaBin()!;
     const cmd = `${bin} --project=@. --startup-file=no --history-file=no -e "using Pkg; println(dirname(Pkg.Types.Context().env.project_file))"`;
-    return (await execPromise(cmd)).stdout.trim();
+    return execSync(cmd).toString().trim();
   }
 
   private async resolveSysimgPath() {
@@ -144,11 +145,14 @@ export class Ctx {
     }
     const bin = this.resolveJuliaBin()!;
     const cmd = `${bin} --project=${this.compileEnv} --startup-file=no --history-file=no -e "print(Base.Sys.BINDIR)"`;
-    const bindir = (await execPromise(cmd)).stdout.trim();
+    const bindir = execSync(cmd).toString().trim();
     return path.join(path.dirname(bindir), 'lib', 'julia', sysimg_name);
   }
 
   async compileServerSysimg(args: string[]) {
+    await this.resolveMissingPkgs(this.compileEnv);
+    if (this.pkging) return;
+
     window.showInformationMessage('PackageCompiler.jl will take about 20 mins to compile...');
     const bin = this.resolveJuliaBin()!;
     await window.createTerminal({ name: 'coc-julia-ls' }).then((t) => {
@@ -171,15 +175,13 @@ export class Ctx {
   }
 
   async startServer() {
-    await this.resolveMissingPkgs(this.compileEnv);
-    let bin = path.join(this.serverRoot, 'bin', process.platform === 'win32' ? 'JuliaLS.exe' : 'JuliaLS');
+    await this.resolveMissingPkgs(this.lsProj);
+    if (this.pkging) return;
+
+    const bin = this.resolveJuliaBin()!;
     let args: string[] = await this.prepareLSArgs();
-    if (!fs.existsSync(bin)) {
-      await this.resolveMissingPkgs(this.lsProj);
-      bin = this.resolveJuliaBin()!;
-      const juliaArgs = await this.prepareJuliaArgs();
-      args = juliaArgs.concat(args);
-    }
+    const juliaArgs = await this.prepareJuliaArgs();
+    args = juliaArgs.concat(args);
 
     const tmpdir = ((await workspace.nvim.eval('$TMPDIR')) as string) || process.env.TMPDIR || process.env.TMP;
     const serverOptions: ServerOptions = {
