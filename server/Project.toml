@@ -1,7 +1,7 @@
-name = "JuliaLS"
 uuid = "0ec4ad5a-e7f9-49de-9a17-36cc3df90ba0"
 authors = ["Heyward Fann <fannheyward@gmail.com>"]
 version = "0.1.0"
 
 [deps]
 LanguageServer = "2b0e0bc5-e4fd-59b4-8912-456d1b03d8d7"
+PackageCompiler = "9b87118b-4619-50d2-8e1e-99f35a4d4d9d"
