@@ -4,5 +4,4 @@ authors = ["Heyward Fann <fannheyward@gmail.com>"]
 version = "0.1.0"
 
 [deps]
-JuliaFormatter = "98e50ef6-434e-11e9-1051-2b60c6c9e899"
 LanguageServer = "2b0e0bc5-e4fd-59b4-8912-456d1b03d8d7"

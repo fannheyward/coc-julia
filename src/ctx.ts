@@ -149,10 +149,10 @@ export class Ctx {
   }
 
   async compileServerSysimg(args: string[]) {
-    window.showMessage(`PackageCompiler.jl will take about 5 mins to compile...`);
+    window.showInformationMessage('PackageCompiler.jl will take about 20 mins to compile...');
     const bin = this.resolveJuliaBin()!;
-    await workspace.createTerminal({ name: 'coc-julia-ls' }).then((t) => {
-      args.unshift(path.join(this.lsProj, 'src', 'format.jl'));
+    await window.createTerminal({ name: 'coc-julia-ls' }).then((t) => {
+      args.unshift(path.join(this.lsProj, 'src', 'exec.jl'));
       const files = args.join(' ');
       const cmd = `${bin} --project=${this.compileEnv} ${path.join(this.compileEnv, 'compile.jl')} -s ${this.lsProj} ${this.sysimgDir} ${files}`;
       t.sendText(cmd);
