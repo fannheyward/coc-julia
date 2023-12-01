@@ -210,9 +210,9 @@
   integrity sha512-G8hZ6XJiHnuhQKR7ZmysCeJWE08o8T0AXtk5darsCaTVsYZhhgUrq53jizaR2FvsoeCwJhlmwTjkXBY5Pn/ZHw==
 
 "@types/which@^3.0.0":
-  version "3.0.1"
-  resolved "https://registry.yarnpkg.com/@types/which/-/which-3.0.1.tgz#3feaf0cd752e5059c3fb2e9c5bffe584ae73f557"
-  integrity sha512-OJWjr4k8gS1HXuOnCmQbBrQez+xqt/zqfp5PhgbKtsmEFEuojAg23arr+TiTZZ1TORdUF9RKXb/WKEpT1dwgSg==
+  version "3.0.3"
+  resolved "https://registry.yarnpkg.com/@types/which/-/which-3.0.3.tgz#41142ed5a4743128f1bc0b69c46890f0453ddb89"
+  integrity sha512-2C1+XoY0huExTbs8MQv1DuS5FS86+SEjdM9F/+GS61gg5Hqbtj8ZiDSx8MfWcyei907fIPbfPGCOrNUTnVHY1g==
 
 "@typescript-eslint/eslint-plugin@^6.4.1":
   version "6.9.1"
