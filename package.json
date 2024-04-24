@@ -12,7 +12,7 @@
     "coc": "^0.0.80"
   },
   "scripts": {
-    "lint": "eslint src --ext ts",
+    "lint": "biome lint src",
     "watch": "node esbuild.js --watch",
     "build": "node esbuild.js",
     "prepare": "node esbuild.js"
@@ -20,11 +20,8 @@
   "devDependencies": {
     "@types/node": "16",
     "@types/which": "^3.0.0",
-    "@typescript-eslint/eslint-plugin": "^7.1.0",
-    "@typescript-eslint/parser": "^7.1.0",
     "coc.nvim": "^0.0.83-next.18",
     "esbuild": "^0.20.0",
-    "eslint": "^8.5.0",
     "typescript": "^5.0.4",
     "which": "^4.0.0"
   },

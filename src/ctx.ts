@@ -1,22 +1,22 @@
-import { execSync } from 'child_process';
 import {
-  CompletionItem,
-  CompletionList,
-  ExtensionContext,
   LanguageClient,
-  LanguageClientOptions,
   Position,
   Range,
-  ServerOptions,
-  services,
   TextEdit,
+  services,
   window,
   workspace,
-  WorkspaceConfiguration,
+  type CompletionItem,
+  type CompletionList,
+  type ExtensionContext,
+  type LanguageClientOptions,
+  type ServerOptions,
+  type WorkspaceConfiguration,
 } from 'coc.nvim';
-import fs from 'fs';
-import os from 'os';
-import path from 'path';
+import { execSync } from 'node:child_process';
+import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
 import which from 'which';
 
 class Config {
@@ -79,6 +79,7 @@ export class Ctx {
   }
 
   private resolveJuliaVersion(): string {
+    // biome-ignore lint/style/noNonNullAssertion: <explanation>
     const bin = this.resolveJuliaBin()!;
     const cmd = `${bin} --startup-file=no --history-file=no -e "println(VERSION)"`;
     return execSync(cmd).toString().trim();
@@ -103,16 +104,21 @@ export class Ctx {
   }
 
   private async resolveMissingPkgs(projPath: string): Promise<void> {
+    // biome-ignore lint/style/noNonNullAssertion: <explanation>
     const bin = this.resolveJuliaBin()!;
     let cmd = `${bin} --project="${projPath}" --startup-file=no --history-file=no -e "using Pkg; Pkg.status()"`;
     const pkgs = this.formatPkg(execSync(cmd).toString().split('\n'));
     if (pkgs.some((p) => p.state === '→')) {
-      const ok = await window.showPrompt(`Some LanguageServer.jl deps are missing, would you like to install now?`);
+      const ok = await window.showPrompt(
+        'Some LanguageServer.jl deps are missing, would you like to install now?',
+      );
       if (ok) {
         this.pkging = true;
         cmd = `${bin} --project="${projPath}" --startup-file=no --history-file=no -e "using Pkg; Pkg.instantiate()"`;
 
-        await window.createTerminal({ name: 'coc-julia-ls' }).then((t) => t.sendText(cmd));
+        await window
+          .createTerminal({ name: 'coc-julia-ls' })
+          .then((t) => t.sendText(cmd));
       }
     }
   }
@@ -122,6 +128,7 @@ export class Ctx {
       return this.config.environmentPath;
     }
 
+    // biome-ignore lint/style/noNonNullAssertion: <explanation>
     const bin = this.resolveJuliaBin()!;
     const cmd = `${bin} --project=@. --startup-file=no --history-file=no -e "using Pkg; println(dirname(Pkg.Types.Context().env.project_file))"`;
     return execSync(cmd).toString().trim();
@@ -138,6 +145,7 @@ export class Ctx {
     if (fs.existsSync(sysimg)) {
       return sysimg;
     }
+    // biome-ignore lint/style/noNonNullAssertion: <explanation>
     const bin = this.resolveJuliaBin()!;
     const cmd = `${bin} --project=${this.lsProj} --startup-file=no --history-file=no -e "print(Base.Sys.BINDIR)"`;
     const bindir = execSync(cmd).toString().trim();
@@ -145,12 +153,19 @@ export class Ctx {
   }
 
   async compileServerSysimg(args: string[]) {
-    window.showInformationMessage('PackageCompiler.jl will take about 20 mins to compile...');
+    window.showInformationMessage(
+      'PackageCompiler.jl will take about 20 mins to compile...',
+    );
+    // biome-ignore lint/style/noNonNullAssertion: <explanation>
     const bin = this.resolveJuliaBin()!;
     await window.createTerminal({ name: 'coc-julia-ls' }).then((t) => {
       args.unshift(path.join(this.lsProj, 'src', 'exec.jl'));
       const files = args.join(' ');
-      const cmd = `${bin} --project=${this.lsProj} ${path.join(this.lsProj, 'src', 'compile.jl')} -s ${this.lsProj} ${this.sysimgDir} ${files}`;
+      const cmd = `${bin} --project=${this.lsProj} ${path.join(
+        this.lsProj,
+        'src',
+        'compile.jl',
+      )} -s ${this.lsProj} ${this.sysimgDir} ${files}`;
       t.sendText(cmd);
     });
   }
@@ -158,21 +173,39 @@ export class Ctx {
   private prepareJuliaArgs(): string[] {
     const sysimg = this.resolveSysimgPath();
     const server = path.join(this.lsProj, 'src', 'server.jl');
-    const args = ['--startup-file=no', '--history-file=no', `--sysimage=${sysimg}`, '--depwarn=no', `--project=${this.lsProj}`, server];
+    const args = [
+      '--startup-file=no',
+      '--history-file=no',
+      `--sysimage=${sysimg}`,
+      '--depwarn=no',
+      `--project=${this.lsProj}`,
+      server,
+    ];
 
     const env = this.resolveEnvPath();
-    const depopPath = process.env.JULIA_DEPOT_PATH ? process.env.JULIA_DEPOT_PATH : '';
-    return args.concat([env, '--debug=no', depopPath, this.context.storagePath]);
+    const depopPath = process.env.JULIA_DEPOT_PATH
+      ? process.env.JULIA_DEPOT_PATH
+      : '';
+    return args.concat([
+      env,
+      '--debug=no',
+      depopPath,
+      this.context.storagePath,
+    ]);
   }
 
   async startServer() {
     await this.resolveMissingPkgs(this.lsProj);
     if (this.pkging) return;
 
+    // biome-ignore lint/style/noNonNullAssertion: <explanation>
     const command = this.resolveJuliaBin()!;
     const args = this.prepareJuliaArgs();
 
-    const tmpdir = ((await workspace.nvim.eval('$TMPDIR')) as string) || process.env.TMPDIR || process.env.TMP;
+    const tmpdir =
+      ((await workspace.nvim.eval('$TMPDIR')) as string) ||
+      process.env.TMPDIR ||
+      process.env.TMP;
     const serverOptions: ServerOptions = {
       command,
       args,
@@ -187,20 +220,44 @@ export class Ctx {
       },
       progressOnInitialization: true,
       middleware: {
-        provideCompletionItem: async (document, position, context, token, next) => {
+        provideCompletionItem: async (
+          document,
+          position,
+          context,
+          token,
+          next,
+        ) => {
           // @ts-ignore
+          // biome-ignore lint/style/noNonNullAssertion: <explanation>
           const option = context.option!;
-          const input = option.input.startsWith(option.word) ? option.input : option.word + option.input;
-          const res = (await next(document, position, context, token)) as CompletionList;
+          const input = option.input.startsWith(option.word)
+            ? option.input
+            : option.word + option.input;
+          const res = (await next(
+            document,
+            position,
+            context,
+            token,
+          )) as CompletionList;
           const items: CompletionItem[] = [];
           if (res && Array.isArray(res.items)) {
             for (const item of res.items) {
-              if (item.textEdit && TextEdit.is(item.textEdit) && (item.kind === 14 || item.kind === 17)) {
+              if (
+                item.textEdit &&
+                TextEdit.is(item.textEdit) &&
+                (item.kind === 14 || item.kind === 17)
+              ) {
                 const newText = item.textEdit.newText;
                 if (!newText.startsWith(input)) {
                   const range = Object.assign({}, item.textEdit.range);
-                  const start = Position.create(range.start.line, range.start.character - input.length);
-                  const end = Position.create(range.end.line, range.end.character);
+                  const start = Position.create(
+                    range.start.line,
+                    range.start.character - input.length,
+                  );
+                  const end = Position.create(
+                    range.end.line,
+                    range.end.character,
+                  );
                   item.textEdit.newText = `${input}${newText}`;
                   item.textEdit.range = Range.create(start, end);
                 }
@@ -215,7 +272,12 @@ export class Ctx {
       },
     };
 
-    const client = new LanguageClient('julia', 'Julia Language Server', serverOptions, clientOptions);
+    const client = new LanguageClient(
+      'julia',
+      'Julia Language Server',
+      serverOptions,
+      clientOptions,
+    );
     this.context.subscriptions.push(services.registLanguageClient(client));
   }
 }

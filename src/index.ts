@@ -1,4 +1,4 @@
-import { commands, ExtensionContext, window } from 'coc.nvim';
+import { type ExtensionContext, commands, window } from 'coc.nvim';
 import { Ctx } from './ctx';
 
 export async function activate(context: ExtensionContext): Promise<void> {
@@ -14,8 +14,11 @@ export async function activate(context: ExtensionContext): Promise<void> {
   await ctx.startServer();
 
   context.subscriptions.push(
-    commands.registerCommand('julia.CompileLanguageServerSysimg', async (...args: string[]) => {
-      await ctx.compileServerSysimg(args);
-    })
+    commands.registerCommand(
+      'julia.CompileLanguageServerSysimg',
+      async (...args: string[]) => {
+        await ctx.compileServerSysimg(args);
+      },
+    ),
   );
 }
