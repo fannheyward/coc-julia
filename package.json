@@ -19,7 +19,7 @@
   },
   "devDependencies": {
     "@biomejs/biome": "^1.7.1",
-    "@types/node": "16",
+    "@types/node": "22",
     "@types/which": "^3.0.3",
     "coc.nvim": "^0.0.83-next.18",
     "esbuild": "^0.25.0",
