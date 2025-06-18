@@ -79,7 +79,7 @@ export class Ctx {
   }
 
   private resolveJuliaVersion(): string {
-    // biome-ignore lint/style/noNonNullAssertion: <explanation>
+    // biome-ignore lint/style/noNonNullAssertion: x
     const bin = this.resolveJuliaBin()!;
     const cmd = `${bin} --startup-file=no --history-file=no -e "println(VERSION)"`;
     return execSync(cmd).toString().trim();
@@ -104,7 +104,7 @@ export class Ctx {
   }
 
   private async resolveMissingPkgs(projPath: string): Promise<void> {
-    // biome-ignore lint/style/noNonNullAssertion: <explanation>
+    // biome-ignore lint/style/noNonNullAssertion: x
     const bin = this.resolveJuliaBin()!;
     let cmd = `${bin} --project="${projPath}" --startup-file=no --history-file=no -e "using Pkg; Pkg.status()"`;
     const pkgs = this.formatPkg(execSync(cmd).toString().split('\n'));
@@ -128,7 +128,7 @@ export class Ctx {
       return this.config.environmentPath;
     }
 
-    // biome-ignore lint/style/noNonNullAssertion: <explanation>
+    // biome-ignore lint/style/noNonNullAssertion: x
     const bin = this.resolveJuliaBin()!;
     const cmd = `${bin} --project=@. --startup-file=no --history-file=no -e "using Pkg; println(dirname(Pkg.Types.Context().env.project_file))"`;
     return execSync(cmd).toString().trim();
@@ -145,7 +145,7 @@ export class Ctx {
     if (fs.existsSync(sysimg)) {
       return sysimg;
     }
-    // biome-ignore lint/style/noNonNullAssertion: <explanation>
+    // biome-ignore lint/style/noNonNullAssertion: x
     const bin = this.resolveJuliaBin()!;
     const cmd = `${bin} --project=${this.lsProj} --startup-file=no --history-file=no -e "print(Base.Sys.BINDIR)"`;
     const bindir = execSync(cmd).toString().trim();
@@ -156,7 +156,7 @@ export class Ctx {
     window.showInformationMessage(
       'PackageCompiler.jl will take about 20 mins to compile...',
     );
-    // biome-ignore lint/style/noNonNullAssertion: <explanation>
+    // biome-ignore lint/style/noNonNullAssertion: x
     const bin = this.resolveJuliaBin()!;
     await window.createTerminal({ name: 'coc-julia-ls' }).then((t) => {
       args.unshift(path.join(this.lsProj, 'src', 'exec.jl'));
@@ -198,7 +198,7 @@ export class Ctx {
     await this.resolveMissingPkgs(this.lsProj);
     if (this.pkging) return;
 
-    // biome-ignore lint/style/noNonNullAssertion: <explanation>
+    // biome-ignore lint/style/noNonNullAssertion: x
     const command = this.resolveJuliaBin()!;
     const args = this.prepareJuliaArgs();
 
@@ -228,7 +228,7 @@ export class Ctx {
           next,
         ) => {
           // @ts-ignore
-          // biome-ignore lint/style/noNonNullAssertion: <explanation>
+          // biome-ignore lint/style/noNonNullAssertion: x
           const option = context.option!;
           const input = option.input.startsWith(option.word)
             ? option.input
