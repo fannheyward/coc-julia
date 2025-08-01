@@ -24,7 +24,7 @@
     "coc.nvim": "^0.0.83-next.18",
     "esbuild": "^0.25.0",
     "typescript": "^5.4.5",
-    "which": "^4.0.0"
+    "which": "^5.0.0"
   },
   "activationEvents": [
     "onLanguage:julia",
